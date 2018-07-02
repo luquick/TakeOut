@@ -9,11 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 import cn.yuchen.com.takeout.R;
 import cn.yuchen.com.takeout.presenter.GoodsPresenter;
 import cn.yuchen.com.takeout.presenter.net.bean.GoodsInfo;
-import cn.yuchen.com.takeout.presenter.net.bean.GoodsTypeInfo;
 import cn.yuchen.com.takeout.presenter.net.bean.Seller;
 import cn.yuchen.com.takeout.ui.adapter.GoodsAdapter;
 import cn.yuchen.com.takeout.ui.adapter.GoodsTypeAdapter;
@@ -33,6 +34,7 @@ public class GoodsFragment extends BaseFragment {
     @butterknife.BindView(R.id.slhlv)
     StickyListHeadersListView slhlv;
     private Seller mSeller;
+    private GoodsAdapter mGoodsAdapter;
 
 
     @Override
@@ -57,23 +59,39 @@ public class GoodsFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         //-----------------------左侧----------------------------------
         //创建_绑定Adapter,传递上下文进去
-        GoodsTypeAdapter gTAdapter = new GoodsTypeAdapter(getActivity());
+        GoodsTypeAdapter gTAdapter = new GoodsTypeAdapter(getActivity(), this);
         rvGoodsType.setAdapter(gTAdapter);
         //创建_设置_绑定LayoutManager
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         rvGoodsType.setLayoutManager(linearLayoutManager);
 
-        //-------------------------------------------------------------
         //------------------------右侧---------------------------------
-        GoodsAdapter gAdapter = new GoodsAdapter(getActivity());
-        slhlv.setAdapter(gAdapter);
-
-
+        mGoodsAdapter = new GoodsAdapter(getActivity());
+        slhlv.setAdapter(mGoodsAdapter);
         //-------------------------------------------------------------
-
         //获取数据--触发网络请求数据
-        GoodsPresenter goodsPresenter = new GoodsPresenter(gTAdapter,gAdapter,mSeller);
+        GoodsPresenter goodsPresenter = new GoodsPresenter(gTAdapter, mGoodsAdapter, mSeller);
         goodsPresenter.getBusinessData(mSeller.getId());
+    }
+
+    /**
+     * @param typeId 商品类型id---> typeId 用于内部两个Adapter【GoodsTypeAdapter】，【GoodsAdapter】间传递的 商品类型 typeId
+     *               用于管理右侧商品列表的位置锁定
+     */
+    public void setTypeId(int typeId) {
+        List<GoodsInfo> goodsInfos = mGoodsAdapter.getData();
+        //首先判不为空
+        if (goodsInfos != null && goodsInfos.size() > 0) {
+            //左侧选中的商品分类Id --> 右侧在遍历商品过程中有对应左侧的类型typeId,则右侧listView就需要滚动到索引i的位置
+            for (GoodsInfo goodsInfo : goodsInfos) {
+                int id = goodsInfo.getTypeId();
+                if (typeId == id) {
+                    //滚动到当前索引位置
+                    slhlv.setSelection(goodsInfos.indexOf(goodsInfo));
+                    //找到对应的id停止最外层的循环。
+                    break;
+                }
+            }
+        }
     }
 }

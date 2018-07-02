@@ -15,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.yuchen.com.takeout.R;
 import cn.yuchen.com.takeout.presenter.net.bean.GoodsTypeInfo;
+import cn.yuchen.com.takeout.ui.fragment.GoodsFragment;
 
 /**
  * 作者：Created by Luquick on 2018/6/30.
@@ -26,24 +27,24 @@ import cn.yuchen.com.takeout.presenter.net.bean.GoodsTypeInfo;
 public class GoodsTypeAdapter extends RecyclerView.Adapter {
     private Context mContext;
     private List<GoodsTypeInfo> mGoodsTypes;
+    private GoodsFragment mGoodsFragment;
     //定义一个当前item选择状态的索引
     private int mCurrentIndex = 0;
 
 
     /**
-     * 构造器传递上下文
-     * @param context
+     * @param context 构造器传递上下文
      */
-    public GoodsTypeAdapter(Context context) {
+    public GoodsTypeAdapter(Context context, GoodsFragment goodsFragment) {
         this.mContext = context;
+        this.mGoodsFragment = goodsFragment;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_type, null);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
@@ -88,9 +89,9 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
         TextView tvCount;
         @BindView(R.id.type)
         TextView type;
-        private int mPosition;
+        private int position;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
@@ -99,17 +100,29 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     //更新当前所引值
-                    mCurrentIndex = mPosition;
+                    mCurrentIndex = position;
                     //刷新适配器
                     notifyDataSetChanged();
+                    //点中某一个分类item--->右侧展示相同类目的商品
+                    //分类Id
+                    //商品 typeId---对应的就是分类Id
+                    /**
+                     * 获取左侧item的分类Id
+                     * 将这个Id从当前GoodsTypeAdapter传递到GoodsFragment在传递到GoodsAdapter
+                     * 用来更新--相同类目产品的滑动位置信息。
+                     */
+                    int typeId = mGoodsTypes.get(position).getId();
+                    //传递给GoodsFragment
+                    mGoodsFragment.setTypeId(typeId);
+
                 }
             });
 
         }
 
-        public void setPosition(int position) {
-            
-            this.mPosition = position;
+        void setPosition(int position) {
+
+            this.position = position;
         }
     }
 }

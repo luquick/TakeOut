@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +48,13 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
         mGoods = goods;
         //只要有数据进来 --->一定要刷新页面
         notifyDataSetChanged();
+    }
+
+    /**
+     * @return 当前的说有商品
+     */
+    public List<GoodsInfo> getData() {
+        return mGoods;
     }
 
     /**
@@ -123,7 +131,6 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
         //项目中分类有11个
         return mGoods.get(position).getTypeId();
     }
-
     //-----------------------------------------implement-------------------------
 
     static class ViewHolder {
