@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "cn.yuchen.com.takeout"
+        minSdkVersion 23
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildToolsVersion '28.0.0 rc2'
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    /*RecyclerView*/
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    /*基于OkHttp网络框架的封装的Retrofit*/
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    /*Retrofit响应数据的Gson解析*/
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    /*butter knife*/
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    //以下三个依赖包--首页轮番视图时导入--具体参考 SliderLayout项目
+    //implementation 'com.nineoldandroids:library:2.4.0'//兼容低版本动画
+    //implementation 'com.daimajia.androidanimations:library:1.0.3@aar'//---包括轮番图自动轮训的自定义控件
+    implementation project(':library')
+    /*商家信息界面---bottomSheet--第三方控件Jar----点击弹出对话框的自定义控件*/
+    implementation 'com.flipboard:bottomsheet-core:1.5.3'
+    implementation 'com.flipboard:bottomsheet-commons:1.5.3'
+    /*tableLayout--*/
+    implementation 'com.android.support:design:26.1.0'
+    /*带有标题头的自定义ListView--第三方 StickyListHeaders*/
+    implementation 'se.emilsjolander:stickylistheaders:2.7.0'
+    //图片异步加载框架
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+}

@@ -1,0 +1,9 @@
+//Java源文件
+//第三方自定义控件
+//Layout
+
+--------------
+编译不通过提示
+Execution failed for task ':app:compileDebugJavaWithJavac'.
+也就是编写的Java源文件有问题，需要仔细检查。
+------------

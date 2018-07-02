@@ -1,0 +1,50 @@
+
+
+
+
+//项目需求分析
+1、商品列表
+2、加入购物车，
+3、购物车商品生成订单
+4、提交订单（支付宝，消息推送）
+5、地址管理（高德）
+6、送货轨迹（即时定位）
+7、登陆注册（短信验证）
+
+
+----res------
+/布局/
+//第三方自定义控件的使用
+StickyListHeaders
+SwipeRefreshLayout
+BottomSheetLayout
+recyclerView
+    多条目类型的展示
+    getItemViewType(int position)
+    条目总数 getItemCount()
+    创建每一个条目的ViewHolder对象，ViewHolder的构造器方法中，需要传递条目的布局转换成view对象。
+    给ViewHolder中的控件绑定数据
+
+ListView
+    多条目类型实现
+    getViewTypeCount()--->告诉适配器，listView条目类型总数
+    getItemViewType(int position)--->判断position所属条目类型/
+fragment
+
+/drawable/
+shape
+selector
+
+----------------
+/自定义代码模板/
+CSDN @mipmap/资源的引用之 mip 快捷键；
+
+
+--------------
+需求文档，
+接口文档，
+-----技术文档-----
+
+
+
+
