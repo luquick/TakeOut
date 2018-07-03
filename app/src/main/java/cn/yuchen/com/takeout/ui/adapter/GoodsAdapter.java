@@ -51,7 +51,7 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
     }
 
     /**
-     * @return 当前的说有商品
+     * @return 当前的所有商品
      */
     public List<GoodsInfo> getData() {
         return mGoods;

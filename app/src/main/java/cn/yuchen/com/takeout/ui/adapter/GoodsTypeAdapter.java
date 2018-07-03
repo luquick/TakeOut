@@ -28,9 +28,10 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
     private Context mContext;
     private List<GoodsTypeInfo> mGoodsTypes;
     private GoodsFragment mGoodsFragment;
+
+
     //定义一个当前item选择状态的索引
     private int mCurrentIndex = 0;
-
 
     /**
      * @param context 构造器传递上下文
@@ -84,6 +85,14 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();//更新数据
     }
 
+    /**
+     * 提供给外部的数据
+     * @return 当前列表的素有数据
+     */
+    public List<GoodsTypeInfo> getData() {
+        return mGoodsTypes;
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tvCount)
         TextView tvCount;
@@ -121,8 +130,24 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
         }
 
         void setPosition(int position) {
-
             this.position = position;
         }
+    }
+
+    /**
+     * 提供一个对外部访问私有属性的方法
+     * @return 当前选中的item的索引
+     */
+    public int getCurrentIndex() {
+        return mCurrentIndex;
+    }
+
+    /**
+     * 提供一个对外部访问私有属性的方法
+     * @param currentIndex 当前选中的item的索引
+     */
+    public void setCurrentIndex(int currentIndex) {
+        this.mCurrentIndex = currentIndex;
+        notifyDataSetChanged();//刷新
     }
 }
