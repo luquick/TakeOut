@@ -208,10 +208,10 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
          */
         private void addGoods(View view) {
             //添加商品数量为空的时候出现滚动平移动画,通过当前商品的被添加数量来判断
-            mGoodsInfo = GoodsAdapter.this.mGoods.get(mPosition);
+            mGoodsInfo = mGoods.get(mPosition);
             if (mGoodsInfo != null && mGoodsInfo.getCount() == 0) {
                 //构建三组动画-->动画集合
-                AnimationSet aSet = generateAnimation(true,null,null);
+                AnimationSet aSet = generateAnimation(true, null, null);
                 ibMinus.startAnimation(aSet);
                 ibMinus.setVisibility(View.VISIBLE);
                 tvCount.setVisibility(View.VISIBLE);
@@ -253,12 +253,15 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
          */
         private void deleteGoods(View view) {
             view.setEnabled(true);
+            mGoodsInfo = mGoods.get(mPosition);
             int tempCount = mGoodsInfo.getCount() - 1;
-            mGoodsInfo.setCount(tempCount);
-            tvCount.setText(String.valueOf(tempCount));
+                mGoodsInfo.setCount(tempCount);
+                tvCount.setText(String.valueOf(tempCount));
             if (tempCount == 0) {
                 AnimationSet aSet = generateAnimation(false, tvCount, ibMinus);
                 ibMinus.startAnimation(aSet);
+            }else{
+                notifyDataSetChanged();
             }
         }
 
@@ -351,7 +354,7 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
                     0,
                     Animation.RELATIVE_TO_SELF,
                     0);
-        }else {
+        } else {
             aA = new AlphaAnimation(1, 0);
             tA = new TranslateAnimation(
                     Animation.RELATIVE_TO_SELF,
@@ -379,6 +382,7 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
                 public void onAnimationEnd(Animation animation) {
                     tv.setVisibility(View.GONE);
                     ib.setVisibility(View.GONE);
+                    notifyDataSetChanged();
                 }
 
                 @Override
