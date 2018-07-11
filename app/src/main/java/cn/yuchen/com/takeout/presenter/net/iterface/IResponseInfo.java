@@ -6,6 +6,7 @@ import cn.yuchen.com.takeout.utils.Constant;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -30,17 +31,34 @@ public interface IResponseInfo {
      * -----------------@Query 指定发给服务器的参数。
      * -------请求回掉 Call<数据格式实例></>
      *
-     * @param longitude
-     * @param latitude
+     *
+     * @param longitude longitude
+     * @param latitude latitude
+     * @return ResponseInfo
      */
     @GET(Constant.HOME_URL)
     Call<ResponseInfo> getHomeInfo(@Query("longitude") String longitude, @Query("latitude") String latitude);
 
     /**
      * 构建商品类型列表界面数据请求体
-     * @param sellerId
-     * @return
+     *
+     * @param sellerId sellerId
+     * @return ResponseInfo
      */
     @GET(Constant.BUSINESS_URL)
     Call<ResponseInfo> getGoogsInfo(@Query("sellerId") long sellerId);
+
+    /**
+     * 构建登陆数据请求体
+     * @param username userName
+     * @param password userPass
+     * @param phone phone
+     * @param type 验证类型，邮箱，手机验证码。。。。
+     * @return ResponseInfo
+     */
+    @GET(Constant.Login)
+    Call<ResponseInfo> getloginInfo(@Query("username") String username,
+                                    @Query("password") String password,
+                                    @Query("phone") String phone,
+                                    @Query("type") int type);
 }

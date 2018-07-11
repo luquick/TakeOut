@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import cn.yuchen.com.takeout.presenter.net.bean.HomeInfo;
 import cn.yuchen.com.takeout.presenter.net.bean.ResponseInfo;
 import cn.yuchen.com.takeout.ui.adapter.HomeRecyclerViewAdapter;
+import cn.yuchen.com.takeout.utils.LogUtil;
 import retrofit2.Call;
 
 /**
@@ -31,7 +32,7 @@ public class HomePresenter extends BasePresenter {
 
     @Override
     protected void parseJson(String json) {
-        Log.i("",json);
+        LogUtil.i(json);
         Gson gson = new Gson();
         //得到Json数据映射到 Java Bean 实例
         HomeInfo hInfo = gson.fromJson(json, HomeInfo.class);

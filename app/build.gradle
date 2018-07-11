@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.mob.sdk'
 
 android {
     compileSdkVersion 26
@@ -18,6 +19,14 @@ android {
     }
     buildToolsVersion '28.0.0 rc2'
 
+}
+
+MobSDK {
+    appKey "26b5726459bc7"
+    appSecret "09407fe4778c0dade450c82a0ab2effd"
+    SMSSDK {
+        gui false
+    }
 }
 
 dependencies {
@@ -49,4 +58,5 @@ dependencies {
     implementation 'se.emilsjolander:stickylistheaders:2.7.0'
     //图片异步加载框架
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.j256.ormlite:ormlite-android:5.1'
 }

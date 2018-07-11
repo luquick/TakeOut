@@ -17,10 +17,12 @@ import com.flipboard.bottomsheet.BottomSheetLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.yuchen.com.takeout.R;
 import cn.yuchen.com.takeout.presenter.net.bean.Seller;
 import cn.yuchen.com.takeout.ui.adapter.BusinessFragmentPagerAdapter;
 import cn.yuchen.com.takeout.utils.Constant;
+import cn.yuchen.com.takeout.utils.LogUtil;
 
 /**
  * 作者：Created by Luquick on 2018/6/30.
@@ -109,5 +111,40 @@ public class BusinessActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @OnClick(R.id.bottomSheetLayout)
+    public void onCLick(View view) {
+        LogUtil.d("onCLick: ---------");
+    }
+
+    /**
+     * 给布局中添加一个平抛动画的视图，也就是给档期那视图【frameLayout---R.layout.activity_bussiness】中添加
+     * @param imageView 平抛动画---添加购物车的动画效果视图
+     * @param width imageView的宽
+     * @param height imageView的高
+     */
+    public void addImageView(ImageView imageView, int width, int height) {
+        flContainer.addView(imageView,width,height);
+    }
+
+    /**
+     *
+     * @return 返回购物车所在屏幕的位置
+     */
+    public int[] getShopCartLocation() {
+        int[] shopCart = new int[2];
+        imgCart.getLocationInWindow(shopCart);
+        return shopCart;
+    }
+
+    /**
+     * 动画结束后移除这个视图
+     * @param imageView 被移除的视图
+     */
+    public void removeImageView(ImageView imageView) {
+        if (imageView != null) {
+            flContainer.removeView(imageView);
+        }
     }
 }

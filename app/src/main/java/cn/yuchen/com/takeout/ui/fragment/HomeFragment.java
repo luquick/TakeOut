@@ -1,14 +1,11 @@
 package cn.yuchen.com.takeout.ui.fragment;
 
 import android.animation.ArgbEvaluator;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +17,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.yuchen.com.takeout.R;
 import cn.yuchen.com.takeout.presenter.HomePresenter;
-import cn.yuchen.com.takeout.presenter.net.bean.HomeItem;
 import cn.yuchen.com.takeout.ui.adapter.HomeRecyclerViewAdapter;
+import cn.yuchen.com.takeout.utils.LogUtil;
 
 /**
  * 作者：Created by Luquick on 2018/6/30.
@@ -31,7 +28,6 @@ import cn.yuchen.com.takeout.ui.adapter.HomeRecyclerViewAdapter;
  * 作用：xxxxxxx
  */
 public class HomeFragment extends BaseFragment {
-    private static final String TAG = HomeFragment.class.getSimpleName();
     private int mY = 0;
     //梯度--->定值
     private static final float DEFINITE_VALUE = 300.0f;
@@ -95,7 +91,7 @@ public class HomeFragment extends BaseFragment {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             //滚动时调用
-            Log.d(TAG, "onScrolled: ------");
+            LogUtil.d("onScrolled: ------");
             //dy---> 垂直滚动多少个像素，根据这个值的大小可以设置顶部 title 的变化/透明度/颜色/位置/
             //dy---> 0 ; 小于 0.
             //dy--->大于等于 定值===300自定义。
@@ -120,7 +116,7 @@ public class HomeFragment extends BaseFragment {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             //滚动状态放生变化调用
-            Log.d(TAG, "onScrollStateChanged: ------");
+            LogUtil.d("onScrollStateChanged: ------");
             super.onScrollStateChanged(recyclerView, newState);
         }
     }

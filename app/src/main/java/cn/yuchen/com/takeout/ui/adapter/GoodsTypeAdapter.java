@@ -87,6 +87,7 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
 
     /**
      * 提供给外部的数据
+     *
      * @return 当前列表的素有数据
      */
     public List<GoodsTypeInfo> getData() {
@@ -136,6 +137,7 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
 
     /**
      * 提供一个对外部访问私有属性的方法
+     *
      * @return 当前选中的item的索引
      */
     public int getCurrentIndex() {
@@ -144,6 +146,7 @@ public class GoodsTypeAdapter extends RecyclerView.Adapter {
 
     /**
      * 提供一个对外部访问私有属性的方法
+     *
      * @param currentIndex 当前选中的item的索引
      */
     public void setCurrentIndex(int currentIndex) {
