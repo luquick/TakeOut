@@ -98,6 +98,7 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
     @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        LogUtil.i("--------getView-------");
 
         ViewHolder viewHolder = null;
         if (convertView == null) {
@@ -120,7 +121,21 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
         Picasso.with(mContext)
                 .load(Constant.LOCALHOST + goodsInfo.getIcon().substring(15))
                 .into(viewHolder.ivIcon);
+        //商品数量大于零，展示商品数量。
+        if (goodsInfo.getCount() > 0) {
+            /*显示减号*/
+            viewHolder.ibMinus.setVisibility(View.VISIBLE);
+            /*显示用来展示的商品数量控件*/
+            viewHolder.tvCount.setVisibility(View.VISIBLE);
+            /*显示数量—[更新数量]*/
+            viewHolder.tvCount.setText(String.valueOf(goodsInfo.getCount()));
+        } else {
+            viewHolder.ibMinus.setVisibility(View.GONE);
+            viewHolder.tvCount.setVisibility(View.GONE);
+        }
 
+        /*当前点中的Item位置，传递给当前view'Holder对象*/
+        viewHolder.setPosition(position);
         return convertView;
     }
 
@@ -139,6 +154,7 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
         //项目中分类有11个
         return mGoods.get(position).getTypeId();
     }
+
     //-----------------------------------------implement-------------------------
     class ViewHolder {
         @BindView(R.id.iv_icon)
@@ -160,19 +176,25 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
         @BindView(R.id.ib_add)
         ImageButton ibAdd;
 
+        /*当前被点击Item的位置*/
+        private int mPosition;
+        private GoodsInfo mGoodsInfo;
+
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
 
-        @OnClick(R.id.ib_add)
+        @OnClick({R.id.ib_add, R.id.ib_minus})
         public void OnClick(View view) {
             //视图在动画过程中不能多次点击，需要等到上一个动画完成。这里通过控制视图的点击来满足条件
             //动画完成后在可以点击
             view.setEnabled(false);
-
             switch (view.getId()) {
-                case R.id.ib_add:
+                case R.id.ib_add://增加商品
                     addGoods(view);
+                    break;
+                case R.id.ib_minus://减少商品
+                    deleteGoods(view);
                     break;
             }
         }
@@ -182,46 +204,82 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
          * 主要走处理动画效果，
          * 【平抛动画中的 view小球是在整个界面的上层一个视图层出现的小圆球，通过将整个视图层放置在 帧布局中。】
          *
-         * @param view 点击的当前视图-->位置信息
+         * @param view 点击的当前视图---添加按钮-->位置信息
          */
         private void addGoods(View view) {
-            //构建三组动画-->动画集合
-            AnimationSet aSet =  generateAnimation();
-            ibMinus.startAnimation(aSet);
-            ibMinus.setVisibility(View.VISIBLE);
-            tvCount.setVisibility(View.VISIBLE);
+            //添加商品数量为空的时候出现滚动平移动画,通过当前商品的被添加数量来判断
+            mGoodsInfo = GoodsAdapter.this.mGoods.get(mPosition);
+            if (mGoodsInfo != null && mGoodsInfo.getCount() == 0) {
+                //构建三组动画-->动画集合
+                AnimationSet aSet = generateAnimation(true,null,null);
+                ibMinus.startAnimation(aSet);
+                ibMinus.setVisibility(View.VISIBLE);
+                tvCount.setVisibility(View.VISIBLE);
+            }
 
             //获取当前view的X，Y坐标。
             int[] sourceLocation = new int[2];
             view.getLocationInWindow(sourceLocation);
-            LogUtil.d( "addGoods: X------ " + sourceLocation[0] + "\nY------ " + sourceLocation[1]);
+            //LogUtil.d("addGoods: X------ " + sourceLocation[0] + "\nY------ " + sourceLocation[1]);
 
             //在点击加号的位置添加一个飞行动画的图片
             ImageView imageView = new ImageView(mContext);
             imageView.setBackgroundResource(R.mipmap.button_add);
             //设置初始位置
             imageView.setX(sourceLocation[0]);
-            imageView.setY(sourceLocation[1]-MyApplication.STATUS_BAR_HEIGHT);
+            imageView.setY(sourceLocation[1] - MyApplication.STATUS_BAR_HEIGHT);
 
             //获取最外图层添加这个view,这里的mContext就是GoodsFragment传递进来的最外层视图
             //将view也就是点击的那张图片的宽高信息设置进去--当前ImageView的位置，宽高，信息与当前点击的view信息一致
-            ((BusinessActivity)mContext).addImageView(imageView,view.getWidth(),view.getHeight());
+            ((BusinessActivity) mContext).addImageView(imageView, view.getWidth(), view.getHeight());
 
             //获取目标位置---数组
             int[] destinationLocation = ((BusinessActivity) mContext).getShopCartLocation();
             //imageView向目标位置平抛运动
-            startMove(imageView,sourceLocation,destinationLocation,view);
+            startMove(imageView, sourceLocation, destinationLocation, view);
 
+            /*给选中的商品数量 + 1 */
+            int newCount = mGoodsInfo.getCount() + 1;
+            mGoodsInfo.setCount(newCount);
+            /*刷新数据适配器-刷新页面*/
+            /*这里的刷新getView方法将得到调用，修改界面属性信息*/
+            notifyDataSetChanged();
+        }
+
+        /**
+         * 删除商品的操作
+         *
+         * @param view 删除按钮视图
+         */
+        private void deleteGoods(View view) {
+            view.setEnabled(true);
+            int tempCount = mGoodsInfo.getCount() - 1;
+            mGoodsInfo.setCount(tempCount);
+            tvCount.setText(String.valueOf(tempCount));
+            if (tempCount == 0) {
+                AnimationSet aSet = generateAnimation(false, tvCount, ibMinus);
+                ibMinus.startAnimation(aSet);
+            }
+        }
+
+        /**
+         * 设置当前位置
+         *
+         * @param position 点中item的当前位置
+         */
+        private void setPosition(int position) {
+            mPosition = position;
         }
     }
 
     /**
      * 开始移动-->抛物
-     * @param imageView 索要移动的对象
-     * @param sourceLocation  移动开始位置
-     * @param destinationLocation   终止移动位置
+     *
+     * @param imageView           索要移动的对象
+     * @param sourceLocation      移动开始位置
+     * @param destinationLocation 终止移动位置
      */
-    private void startMove(final ImageView imageView, int[] sourceLocation, int[] destinationLocation,final View view) {
+    private void startMove(final ImageView imageView, int[] sourceLocation, int[] destinationLocation, final View view) {
         //分别获取开始--终止 的X、Y轴坐标
         int startX = sourceLocation[0];
         int startY = sourceLocation[1];
@@ -264,16 +322,14 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
             public void onAnimationRepeat(Animation animation) {
             }
         });
-
         imageView.startAnimation(animationSet);
-
     }
 
     /**
-     * 构建三组动画
-     * @return 动画 animationSet
+     * @return 动画集合
      */
-    private AnimationSet generateAnimation() {
+    private AnimationSet generateAnimation(boolean isToVisible, final TextView tv, final ImageButton ib) {
+
         /*旋转、透明、平移*/
         RotateAnimation rotateAnimation = new RotateAnimation(
                 0,
@@ -282,21 +338,54 @@ public class GoodsAdapter extends BaseAdapter implements StickyListHeadersAdapte
                 0.5f,
                 Animation.RELATIVE_TO_SELF,
                 0.5f);
-        AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
-        TranslateAnimation translateAnimation = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF,
-                2,
-                Animation.RELATIVE_TO_SELF,
-                0
-                , Animation.RELATIVE_TO_SELF,
-                0
-                , Animation.RELATIVE_TO_SELF,
-                0);
+        AlphaAnimation aA;
+        TranslateAnimation tA;
+        if (isToVisible) {
+            aA = new AlphaAnimation(0, 1);//不可见-->可见
+            tA = new TranslateAnimation(
+                    Animation.RELATIVE_TO_SELF,
+                    2,
+                    Animation.RELATIVE_TO_SELF,
+                    0,
+                    Animation.RELATIVE_TO_SELF,
+                    0,
+                    Animation.RELATIVE_TO_SELF,
+                    0);
+        }else {
+            aA = new AlphaAnimation(1, 0);
+            tA = new TranslateAnimation(
+                    Animation.RELATIVE_TO_SELF,
+                    0,
+                    Animation.RELATIVE_TO_SELF,
+                    2,
+                    Animation.RELATIVE_TO_SELF,
+                    0,
+                    Animation.RELATIVE_TO_SELF,
+                    0);
+        }
+
         /*动画集合--->放置三组动画--->设置持续时间【这里传递false表示不共享同一个插值器】*/
         AnimationSet animationSet = new AnimationSet(false);
         animationSet.addAnimation(rotateAnimation);
-        animationSet.addAnimation(alphaAnimation);
-        animationSet.addAnimation(translateAnimation);
+        animationSet.addAnimation(aA);
+        animationSet.addAnimation(tA);
+        if (!isToVisible) {
+            animationSet.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    tv.setVisibility(View.GONE);
+                    ib.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+        }
         animationSet.setDuration(500);
         return animationSet;
     }
