@@ -57,7 +57,7 @@ public class LoginActivity extends BaseActivity {
     private String mPNumber;
     /*用于验证码倒计时*/
     private int time = 60;
-    private MyHandler mHandler = new MyHandler();
+    private MyHandler mHandler;
     private MyContentObserver mContentObserver;
     private LoginPresenter mLoginPresenter;
 
@@ -70,6 +70,7 @@ public class LoginActivity extends BaseActivity {
         checkPermission();
         //SMS SDK初始化回调 todo 绕过验证码
         //initSMSSDK();
+        mHandler = new MyHandler(this, etUserCode, tvUserCode, time);
         mContentObserver = new MyContentObserver(this, mHandler);
         this.getContentResolver().registerContentObserver(
                 Telephony.Sms.CONTENT_URI,
@@ -162,27 +163,39 @@ public class LoginActivity extends BaseActivity {
         }*/
     }
 
-    class MyHandler extends Handler {
+    //todo 验证
+    static class MyHandler extends Handler {
+        LoginActivity loginActivity;
+        EditText editText;
+        TextView tvUC;
+        int tTime;
+
+        MyHandler(LoginActivity loginActivity, EditText editText, TextView tvUC, int tTime) {
+            this.loginActivity = loginActivity;
+            this.editText = editText;
+            this.tvUC = tvUC;
+            this.tTime = tTime;
+        }
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case Constant.MSG_RECEIVE_CODE:
                     if (msg.obj != null) {
                         Object code = msg.obj;
-                        etUserCode.setText(code.toString());
+                        editText.setText(code.toString());
                     }
                 case Constant.KEEP_TIME_MIN:
-                    time--;
+                    tTime--;
                     //跟新UI
-                    if (time > 0) {
-                        tvUserCode.setText("请稍后(" + time + ")");
+                    if (tTime > 0) {
+                        tvUC.setText("请稍后(" + tTime + ")");
                     } else {
-                        tvUserCode.setText("重新获取验证码");
+                        tvUC.setText("重新获取验证码");
                     }
                     break;
                 case Constant.REGAIN_VERIFICATION_CODE:
-                    time = 60;
-                    tvUserCode.setText("重新获取验证码");
+                    tTime = 60;
+                    tvUC.setText("重新获取验证码");
                     break;
                /* case Constant.SEND_CODE_SUCCESS:
                     //请求验证码成功
@@ -192,7 +205,7 @@ public class LoginActivity extends BaseActivity {
                 case Constant.CHECK_CODE_SUCCESS:
                     //验证码校验成功
                     //用户注册，登陆
-                    login();
+                    loginActivity.login();
 
                     break;
                 case Constant.CHECK_CODE_FAIL:
@@ -205,7 +218,7 @@ public class LoginActivity extends BaseActivity {
     /**
      * 登陆
      */
-    private void login() {
+     void login() {
         //密码不为空
         String pass = etUserPas.getText().toString().trim();
         if (!TextUtils.isEmpty(mPNumber) && mPNumber.matches(Constant.PHONE_NUMBER_REG) && !TextUtils.isEmpty(pass)) {

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.List;
 
+import cn.yuchen.com.takeout.global.MyApplication;
 import cn.yuchen.com.takeout.model.dao.DBHelper;
 import cn.yuchen.com.takeout.model.dao.bean.UserInfo;
 import cn.yuchen.com.takeout.presenter.net.bean.ResponseInfo;
@@ -40,6 +41,9 @@ public class LoginPresenter extends BasePresenter {
         LogUtil.i(json);
         Gson gson = new Gson();
         UserInfo userInfo = gson.fromJson(json, UserInfo.class);
+        //---------------存储当前用户Id-----------------
+        MyApplication.USER_ID = userInfo.get_id();
+        //---------------存储当前用户Id-----------------
         //1、获取bean中字段
         //2、创建数据库takeout.db,创建用户表
         //3、向表中写数据

@@ -14,6 +14,7 @@ import com.mob.MobSDK;
 public class MyApplication extends Application {
     private static final MyApplication instances = new MyApplication();
     public static int STATUS_BAR_HEIGHT;
+    public static int USER_ID = -1;
 
     public static MyApplication getInstances() {
             return instances;
